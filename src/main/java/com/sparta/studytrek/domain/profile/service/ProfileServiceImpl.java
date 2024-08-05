@@ -104,7 +104,7 @@ public class ProfileServiceImpl implements ProfileService {
 	public ResponseEntity<List<ProfileResponseDto>> getProfilesByRole(UserRoleEnum roleEnum) {
 		Role role = userService.findRoleByName(roleEnum);
 
-		List<Profile> profiles = profileRepository.findAllByUserRoleAndStatusNot(role, ProfileStatus.BASIC);
+		List<Profile> profiles = profileRepository.findAllByUser_Role(role);
 		List<ProfileResponseDto> responseDtos = profiles.stream()
 			.map(ProfileResponseDto::new)
 			.collect(Collectors.toList());
@@ -116,19 +116,11 @@ public class ProfileServiceImpl implements ProfileService {
 	public ResponseEntity<List<ProfileResponseDto>> getProfilesByRoleAndStatus(UserRoleEnum roleEnum, ProfileStatus status) {
 		Role role = userService.findRoleByName(roleEnum);
 
-		List<Profile> profiles = profileRepository.findAllByUserRoleAndStatus(role, status);
+		List<Profile> profiles = profileRepository.findAllByUser_RoleAndStatus(role, status);
 		List<ProfileResponseDto> responseDtos = profiles.stream()
 			.map(ProfileResponseDto::new)
 			.collect(Collectors.toList());
 		return ResponseEntity.ok(responseDtos);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public ResponseEntity<ProfileResponseDto> getProfileById(Long profileId) {
-		Profile profile = findProfileById(profileId);
-		ProfileResponseDto responseDto = new ProfileResponseDto(profile);
-		return ResponseEntity.ok().body(responseDto);
 	}
 
 	@Override

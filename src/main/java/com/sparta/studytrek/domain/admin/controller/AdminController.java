@@ -1,5 +1,6 @@
 package com.sparta.studytrek.domain.admin.controller;
 
+import com.sparta.studytrek.common.ResponseText;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.sparta.studytrek.common.ApiResponse;
-import com.sparta.studytrek.common.ResponseText;
 import com.sparta.studytrek.domain.admin.dto.AdminRequestDto;
 import com.sparta.studytrek.domain.admin.dto.AdminResponseDto;
 import com.sparta.studytrek.domain.admin.service.AdminService;
@@ -161,27 +161,10 @@ public class AdminController {
     }
 
     /**
-     * 프로필 상세 조회 성공(관리자용)
+     * 부트 캠프 등록 (관리자용)
      *
-     * @param profileId 상세를 조회할 프로필을 선택
-     * @return 상세 조회 성공 응답 데이터
-     */
-    @GetMapping("/profiles/{profileId}")
-    public ResponseEntity<ApiResponse> getProfileById(@PathVariable Long profileId) {
-        ProfileResponseDto profileResponseDto = profileService.getProfileById(profileId).getBody();
-        ApiResponse response = ApiResponse.builder()
-            .msg(ResponseText.PROFILE_DETAIL_GET_SUCCESS.getMsg())
-            .statuscode(String.valueOf(HttpStatus.OK.value()))
-            .data(profileResponseDto)
-            .build();
-        return ResponseEntity.ok(response);
-    }
-
-    /**
-     * 부트캠프 등록(관리자용)
-     *
-     * @param campRequestDto 등록할 부트캠프 이름, 상세내용
-     * @return 부트캠프 등록 성공 데이터
+     * @param campRequestDto 캠프 등록 요청 데이터
+     * @return 캠프 등록 성공 응답 데이터
      */
     @PostMapping("/camps")
     public ResponseEntity<ApiResponse> createCamp(@RequestBody CampRequestDto campRequestDto)

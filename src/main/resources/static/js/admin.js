@@ -1,100 +1,158 @@
+let userApprovalRequests = [
+    {
+        id: 1,
+        userName: "김철수",
+        bootcampName: "코드스테이츠",
+        track: "프론트엔드",
+        generation: "47기",
+        startDate: "2023-07-01",
+        endDate: "2023-12-31",
+        requestDate: "2023-06-15",
+        certificate: "certificate1.jpg",
+        status: "pending"
+    },
+    {
+        id: 2,
+        userName: "이영희",
+        bootcampName: "패스트캠퍼스",
+        track: "백엔드",
+        generation: "23기",
+        startDate: "2023-08-01",
+        endDate: "2024-01-31",
+        requestDate: "2023-06-20",
+        certificate: "certificate2.jpg",
+        status: "pending"
+    },
+    {
+        id: 3,
+        userName: "박지훈",
+        bootcampName: "멋쟁이사자처럼",
+        track: "풀스택",
+        generation: "12기",
+        startDate: "2023-09-01",
+        endDate: "2024-02-29",
+        requestDate: "2023-06-25",
+        certificate: "certificate3.jpg",
+        status: "approved"
+    },
+    {
+        id: 4,
+        userName: "최수진",
+        bootcampName: "네이버 부스트캠프",
+        track: "AI",
+        generation: "5기",
+        startDate: "2023-10-01",
+        endDate: "2024-03-31",
+        requestDate: "2023-06-30",
+        certificate: "certificate4.jpg",
+        status: "rejected"
+    }
+];
+
+let bootcampApprovalRequests = [
+    {
+        id: 1,
+        managerName: "박진우",
+        bootcampName: "테크노캠프",
+        requestDate: "2023-07-01",
+        businessCertificate: "business_cert1.jpg",
+        status: "pending"
+    },
+    {
+        id: 2,
+        managerName: "김미란",
+        bootcampName: "코딩마스터",
+        requestDate: "2023-07-05",
+        businessCertificate: "business_cert2.jpg",
+        status: "approved"
+    },
+    {
+        id: 3,
+        managerName: "이상호",
+        bootcampName: "디지털아카데미",
+        requestDate: "2023-07-10",
+        businessCertificate: "business_cert3.jpg",
+        status: "pending"
+    }
+];
+
+let bootcamps = [
+    { managerName: "박진우", bootcampName: "테크노캠프" },
+    { managerName: "김미란", bootcampName: "코딩마스터" },
+    { managerName: "이상호", bootcampName: "디지털아카데미" }
+];
+
 let currentRequestType = 'user';
 
-document.addEventListener('DOMContentLoaded', () => {
-    displayRequests('all', 'newest');
-});
-
-// API로부터 프로필 요청 데이터를 가져오는 함수
-async function loadRequests() {
-    let apiUrl = `/api/admin/profiles/role/${currentRequestType.toUpperCase()}`;
-
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            // 상태가 PENDING, APPROVED, REJECTED인 경우만 반환
-            return result.data.filter(req => ['PENDING', 'APPROVED', 'REJECTED'].includes(req.status));
-        } else {
-            console.error('Failed to fetch profiles');
-            return [];
-        }
-    } catch (error) {
-        console.error('Error fetching profiles:', error);
-        return [];
-    }
-}
-
-// 요청 데이터를 화면에 표시하는 함수
-async function displayRequests(category = 'all', sortOrder = 'newest') {
+function displayRequests(category = 'all', sortOrder = 'newest') {
     const requestsList = document.getElementById('requestsList');
     requestsList.innerHTML = '';
 
-    const requests = await loadRequests();
+    let requests = currentRequestType === 'user' ? userApprovalRequests : bootcampApprovalRequests;
     let filteredRequests = requests;
 
-    // 카테고리에 따라 필터링
     if (category !== 'all') {
-        filteredRequests = requests.filter(req => req.status === category.toUpperCase());
+        filteredRequests = requests.filter(req => req.status === category);
     }
 
-    // 정렬 순서에 따라 정렬
     if (sortOrder === 'newest') {
-        filteredRequests.sort((a, b) => new Date(b.modifiedAt) - new Date(a.modifiedAt));
+        filteredRequests.sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate));
     } else {
-        filteredRequests.sort((a, b) => new Date(a.modifiedAt) - new Date(b.modifiedAt));
+        filteredRequests.sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate));
     }
 
-    // 각 요청 데이터를 카드 형태로 화면에 추가
     filteredRequests.forEach(request => {
-        const requestElement = createProfileCard(request);
+        const requestElement = document.createElement('div');
+        requestElement.className = 'request';
+        if (currentRequestType === 'user') {
+            requestElement.innerHTML = `
+                    <h3>${request.userName} - ${request.bootcampName}</h3>
+                    <div class="request-details">
+                        <p>트랙: ${request.track}</p>
+                        <p>기수: ${request.generation}</p>
+                        <p>요청일: ${request.requestDate}</p>
+                        <p>상태: <span class="${request.status === 'rejected' ? 'warning-text' : request.status === 'approved' ? 'emphasis-text' : ''}">${getStatusText(request.status)}</span></p>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-details" data-id="${request.id}">상세 정보</button>
+                        ${request.status === 'pending' ? `
+                            <button class="btn btn-approve" data-id="${request.id}">승인</button>
+                            <button class="btn btn-reject" data-id="${request.id}">거절</button>
+                        ` : ''}
+                    </div>
+                `;
+        } else {
+            requestElement.innerHTML = `
+                    <h3>${request.bootcampName}</h3>
+                    <div class="request-details">
+                        <p>관계자: ${request.managerName}</p>
+                        <p>요청일: ${request.requestDate}</p>
+                        <p>상태: <span class="${request.status === 'rejected' ? 'warning-text' : request.status === 'approved' ? 'emphasis-text' : ''}">${getStatusText(request.status)}</span></p>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-details" data-id="${request.id}">상세 정보</button>
+                        ${request.status === 'pending' ? `
+                            <button class="btn btn-approve" data-id="${request.id}">승인</button>
+                            <button class="btn btn-reject" data-id="${request.id}">거절</button>
+                        ` : ''}
+                    </div>
+                `;
+        }
         requestsList.appendChild(requestElement);
     });
 
     addEventListeners();
 }
 
-// 프로필 요청을 카드 형태로 생성하는 함수
-function createProfileCard(profile) {
-    const profileElement = document.createElement('div');
-    profileElement.className = 'request';
-
-    profileElement.innerHTML = `
-        <h3>${profile.bootcampName || profile.name}</h3>
-        <div class="request-details">
-            <p>${currentRequestType === 'user' ? `트랙: ${profile.track}` : `관계자 이름: ${profile.name}`}</p>
-            ${currentRequestType === 'user' ? `<p>기수: ${profile.generation}</p>` : ''}
-            <p>요청일: ${new Date(profile.requestedAt).toLocaleDateString()}</p>
-            <p>상태: <span class="${profile.status === 'REJECTED' ? 'warning-text' : profile.status === 'APPROVED' ? 'emphasis-text' : ''}">${getStatusText(profile.status)}</span></p>
-        </div>
-        <div class="request-actions">
-            <button class="btn btn-details" data-id="${profile.id}">상세 정보</button>
-            ${profile.status === 'PENDING' ? `
-                <button class="btn btn-approve" data-id="${profile.id}">승인</button>
-                <button class="btn btn-reject" data-id="${profile.id}">거절</button>
-            ` : ''}
-        </div>
-    `;
-    return profileElement;
-}
-
-// 상태 텍스트를 변환하는 함수
 function getStatusText(status) {
-    switch (status) {
-        case 'PENDING': return '대기중';
-        case 'APPROVED': return '승인됨';
-        case 'REJECTED': return '거절됨';
+    switch(status) {
+        case 'pending': return '대기중';
+        case 'approved': return '승인됨';
+        case 'rejected': return '거절됨';
         default: return '알 수 없음';
     }
 }
 
-// 각 버튼에 이벤트 리스너를 추가하는 함수
 function addEventListeners() {
     document.querySelectorAll('.btn-details').forEach(button => {
         button.addEventListener('click', showDetails);
@@ -109,118 +167,117 @@ function addEventListeners() {
     });
 }
 
-// 상세 정보를 표시하는 함수
-async function showDetails(e) {
+function showDetails(e) {
     const requestId = e.target.getAttribute('data-id');
-    const apiUrl = `/api/admin/profiles/${requestId}`;
+    const requests = currentRequestType === 'user' ? userApprovalRequests : bootcampApprovalRequests;
+    const request = requests.find(req => req.id === parseInt(requestId));
 
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            const request = result.data;
-
-            const modalContent = document.getElementById('modalContent');
-
-            if (currentRequestType === 'user') {
-                modalContent.innerHTML = `
-                    <p><strong>이름:</strong> ${request.name}</p>
-                    <p><strong>부트캠프:</strong> ${request.bootcampName}</p>
-                    <p><strong>트랙:</strong> ${request.track}</p>
-                    <p><strong>기수:</strong> ${request.generation}</p>
-                    <p><strong>시작일:</strong> ${request.startDate}</p>
-                    <p><strong>종료일:</strong> ${request.endDate}</p>
-                    <p><strong>요청일:</strong> ${new Date(request.requestedAt).toLocaleDateString()}</p>
-                    <p><strong>상태:</strong> <span class="${request.status === 'REJECTED' ? 'warning-text' : request.status === 'APPROVED' ? 'emphasis-text' : ''}">${getStatusText(request.status)}</span></p>
-                    <p><strong>인증서:</strong></p>
-                    <img src="${request.certificate}" alt="인증서" class="certificate-preview">
-                `;
-            } else if (currentRequestType === 'bootcamp') {
-                modalContent.innerHTML = `
-                    <p><strong>관계자 이름:</strong> ${request.name}</p>
-                    <p><strong>부트캠프명:</strong> ${request.bootcampName}</p>
-                    <p><strong>요청일:</strong> ${new Date(request.requestedAt).toLocaleDateString()}</p>
-                    <p><strong>상태:</strong> ${getStatusText(request.status)}</p>
-                    <p><strong>사업자 등록증:</strong></p>
-                    <img src="${request.certificate}" alt="사업자 등록증" class="certificate-preview">
-                `;
-            }
-
-            openModal('detailModal');
-        } else {
-            console.error('Failed to fetch profile details');
-        }
-    } catch (error) {
-        console.error('Error fetching profile details:', error);
+    const modalContent = document.getElementById('modalContent');
+    if (currentRequestType === 'user') {
+        modalContent.innerHTML = `
+                <p><strong>이름:</strong> ${request.userName}</p>
+                <p><strong>부트캠프:</strong> ${request.bootcampName}</p>
+                <p><strong>트랙:</strong> ${request.track}</p>
+                <p><strong>기수:</strong> ${request.generation}</p>
+                <p><strong>시작일:</strong> ${request.startDate}</p>
+                <p><strong>종료일:</strong> ${request.endDate}</p>
+                <p><strong>요청일:</strong> ${request.requestDate}</p>
+                <p><strong>상태:</strong> <span class="${request.status === 'rejected' ? 'warning-text' : request.status === 'approved' ? 'emphasis-text' : ''}">${getStatusText(request.status)}</span></p>
+                <p><strong>인증서:</strong></p>
+                <img src="${request.certificate}" alt="인증서" class="certificate-preview">
+            `;
+    } else {
+        modalContent.innerHTML = `
+                <p><strong>관계자 이름:</strong> ${request.managerName}</p>
+                <p><strong>부트캠프명:</strong> ${request.bootcampName}</p>
+                <p><strong>요청일:</strong> ${request.requestDate}</p>
+                <p><strong>상태:</strong> <span class="${request.status === 'rejected' ? 'warning-text' : request.status === 'approved' ? 'emphasis-text' : ''}">${getStatusText(request.status)}</span></p>
+                <p><strong>사업자 등록증:</strong></p>
+                <img src="${request.businessCertificate}" alt="사업자 등록증" class="business-certificate-preview">
+            `;
     }
+
+    const modal = document.getElementById('detailModal');
+    modal.style.display = "flex";
 }
 
-// 요청을 승인하는 함수
-async function approveRequest(e) {
+function approveRequest(e) {
     const requestId = parseInt(e.target.getAttribute('data-id'));
-    const apiUrl = `/api/admin/profiles/${requestId}/approve`;
-
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        });
-
-        if (response.ok) {
-            console.log(`승인된 요청 ID: ${requestId}`);
-            displayRequests('all', 'newest');
-        } else {
-            console.error('Failed to approve request');
-        }
-    } catch (error) {
-        console.error('Error approving request:', error);
+    const requests = currentRequestType === 'user' ? userApprovalRequests : bootcampApprovalRequests;
+    const request = requests.find(req => req.id === requestId);
+    if (request) {
+        request.status = 'approved';
+        console.log(`승인된 요청 ID: ${requestId}`);
+        const activeTab = document.querySelector('.category-tab.active');
+        displayRequests(activeTab.getAttribute('data-category'), document.getElementById('filterDropdown').value);
     }
 }
 
-// 요청을 거절하는 함수
-async function rejectRequest(e) {
+function rejectRequest(e) {
     const requestId = parseInt(e.target.getAttribute('data-id'));
-    const apiUrl = `/api/admin/profiles/${requestId}/reject`;
-
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        });
-
-        if (response.ok) {
-            console.log(`거절된 요청 ID: ${requestId}`);
-            displayRequests('all', 'newest');
-        } else {
-            console.error('Failed to reject request');
-        }
-    } catch (error) {
-        console.error('Error rejecting request:', error);
+    const requests = currentRequestType === 'user' ? userApprovalRequests : bootcampApprovalRequests;
+    const request = requests.find(req => req.id === requestId);
+    if (request) {
+        request.status = 'rejected';
+        console.log(`거절된 요청 ID: ${requestId}`);
+        const activeTab = document.querySelector('.category-tab.active');
+        displayRequests(activeTab.getAttribute('data-category'), document.getElementById('filterDropdown').value);
     }
 }
 
-// 모달을 여는 함수
+// 모달 관련 함수들
 function openModal(modalId) {
     const modal = document.getElementById(modalId);
     modal.style.display = "flex";
 }
 
-// 모달을 닫는 함수
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     modal.style.display = "none";
 }
+
+// 부트캠프 목록 표시
+function displayBootcamps() {
+    const bootcampList = document.getElementById('bootcampList');
+    bootcampList.innerHTML = '';
+
+    bootcamps.forEach(bootcamp => {
+        const bootcampElement = document.createElement('div');
+        bootcampElement.className = 'bootcamp-item';
+        bootcampElement.innerHTML = `
+                <span>${bootcamp.managerName} - ${bootcamp.bootcampName}</span>
+            `;
+        bootcampList.appendChild(bootcampElement);
+    });
+}
+
+// 부트캠프 등록
+function registerBootcamp() {
+    const managerName = document.getElementById('managerName').value;
+    const bootcampName = document.getElementById('bootcampName').value;
+
+    if (managerName && bootcampName) {
+        bootcamps.push({ managerName, bootcampName });
+        closeModal('registerModal');
+        displayBootcamps();
+        openModal('bootcampListModal');
+    } else {
+        alert('모든 필드를 입력해주세요.');
+    }
+}
+
+// 이벤트 리스너 설정
+document.getElementById('btnBootcampRegister').addEventListener('click', () => {
+    displayBootcamps();
+    openModal('bootcampListModal');
+});
+
+document.getElementById('btnRegisterBootcamp').addEventListener('click', () => {
+    closeModal('bootcampListModal');
+    openModal('registerModal');
+});
+
+document.getElementById('btnRegister').addEventListener('click', registerBootcamp);
 
 // 모달 닫기 버튼 이벤트 리스너
 document.querySelectorAll('.close').forEach(closeBtn => {
@@ -256,75 +313,14 @@ document.querySelectorAll('.approval-type-tab').forEach(tab => {
     });
 });
 
+// 초기 요청 목록 표시 (전체 요청 표시)
+displayRequests('all', 'newest');
+
 // 모달 배경 클릭 이벤트 추가
 document.querySelectorAll('.modal').forEach(modal => {
     modal.addEventListener('click', (event) => {
         if (event.target === modal) {
             closeModal(modal.id);
-        }
-    });
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    // 부트캠프 등록 버튼 클릭 시 모달 열기
-    document.getElementById('btnBootcampRegister').addEventListener('click', function() {
-        openModal('registerModal');
-    });
-
-    // 모달 내의 등록하기 버튼 클릭 시 부트캠프 등록 처리
-    document.getElementById('btnRegister').addEventListener('click', async () => {
-        const bootcampName = document.getElementById('bootcampName').value;
-        const description = document.getElementById('description').value;
-
-        // 입력값 검증
-        if (!bootcampName || !description) {
-            Swal.fire({
-                icon: 'warning',
-                title: '필수 입력 사항',
-                text: '부트캠프 이름과 설명을 입력해주세요.'
-            });
-            return;
-        }
-
-        // 요청 데이터 생성
-        const requestData = {
-            name: bootcampName,
-            description: description
-        };
-
-        try {
-            // 부트캠프 생성 API 호출
-            const response = await fetch('/api/admin/camps', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                },
-                body: JSON.stringify(requestData)
-            });
-
-            if (response.ok) {
-                Swal.fire({
-                    icon: 'success',
-                    title: '부트캠프 등록 완료',
-                    text: '부트캠프가 성공적으로 등록되었습니다.'
-                });
-                closeModal('registerModal');
-            } else {
-                const errorData = await response.json();
-                Swal.fire({
-                    icon: 'error',
-                    title: '등록 실패',
-                    text: errorData.message || '부트캠프 등록에 실패했습니다.'
-                });
-            }
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: '오류 발생',
-                text: '부트캠프 등록 중 오류가 발생했습니다.'
-            });
-            console.error('Error registering bootcamp:', error);
         }
     });
 });

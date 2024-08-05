@@ -27,7 +27,6 @@ public enum ResponseText {
     PROFILE_UPDATE_SUCCESS("프로필 수정 성공"),
     PROFILE_DELETE_SUCCESS("프로필 삭제 성공"),
     PROFILE_APPLY_SUCCESS("프로필 신청 성공"),
-    PROFILE_DETAIL_GET_SUCCESS("프로필 상세 조회 성공"),
 
     // question
     QUESTION_CREATE_SUCCESS("질문 작성 성공"),

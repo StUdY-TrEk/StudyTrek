@@ -37,7 +37,7 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 ### 프로필 거절 (관리자용)
-POST {{apiUrl}}/admin/profiles/6/reject
+POST {{apiUrl}}/admin/profiles/7/reject
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
@@ -61,7 +61,7 @@ GET {{apiUrl}}/admin/profiles/role/BOOTCAMP/status/APPROVED
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
-### Role 별 Status 별 프로필 조회 (관리자용) BOOTCAMP, REJECTED
+### Role 별 Status 별 프로필 조회 (관리자용) BOOTCAMP, REJECTD
 GET {{apiUrl}}/admin/profiles/role/BOOTCAMP/status/REJECTED
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
@@ -90,8 +90,3 @@ Authorization: Bearer {{accessToken}}
   "name": "카카오캠프",
   "description": "카카오에서 진행하는 부트캠프"
 }
-
-### 프로필 상세 조회 (관리자용)
-GET {{apiUrl}}/admin/profiles/2
-Content-Type: application/json
-Authorization: Bearer {{accessToken}}
