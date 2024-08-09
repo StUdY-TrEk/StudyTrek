@@ -8,6 +8,7 @@ import com.sparta.studytrek.domain.recruitment.dto.RecruitmentResponseDto;
 import com.sparta.studytrek.domain.recruitment.entity.Recruitment;
 import com.sparta.studytrek.domain.recruitment.repository.RecruitmentRepository;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -95,5 +96,21 @@ public class RecruitmentService {
         if (!recruitmentUserId.equals(userId)) {
             throw new CustomException(ErrorCode.RECRUITMENT_NOT_AUTHORIZED);
         }
+    }
+
+    /**
+     * 필터링된 모집 공고를 가져옵니다.
+     *
+     * @param treks  모집 공고의 트랙 유형 리스트. 필터링 기준으로 사용
+     * @param places 모집 공고의 장소 리스트. 필터링 기준으로 사용
+     * @param costs  모집 공고의 비용 리스트. 필터링 기준으로 사용
+     * @return 주어진 필터 조건에 맞는 모집 공고를 담은 `RecruitmentResponseDto` 리스트.
+     */
+    public List<RecruitmentResponseDto> getFilteredRecruitments(List<String> treks,
+        List<String> places, List<String> costs) {
+        List<Recruitment> recruitments = recruitmentRepository.filterRecruitments(treks, places, costs);
+        return recruitments.stream()
+            .map(RecruitmentResponseDto::new)
+            .toList();
     }
 }

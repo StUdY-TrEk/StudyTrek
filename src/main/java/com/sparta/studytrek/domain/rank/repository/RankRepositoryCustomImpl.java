@@ -1,43 +1,44 @@
-//package com.sparta.studytrek.domain.rank.repository;
-//
-//import com.querydsl.core.BooleanBuilder;
-//import com.querydsl.jpa.impl.JPAQueryFactory;
-//import com.sparta.studytrek.domain.rank.entity.QRank;
-//import com.sparta.studytrek.domain.camp.entity.QCamp;
-//import com.sparta.studytrek.domain.rank.entity.Rank;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Repository;
-//
-//import java.util.List;
-//
-//@Repository
-//public class RankRepositoryCustomImpl implements RankRepositoryCustom {
-//
-//    @Autowired
-//    private JPAQueryFactory jpaQueryFactory;
-//
-//    @Override
-//    public List<Rank> findFilteredRanks(List<String> tracks, List<String> environments, List<String> costs) {
-//        QRank rank = QRank.rank;
-//        QCamp camp = QCamp.camp;
-//
-//        BooleanBuilder builder = new BooleanBuilder();
-//
-//        if (tracks != null && !tracks.isEmpty()) {
-//            builder.and(camp.track.in(tracks));
-//        }
-//        if (environments != null && !environments.isEmpty()) {
-//            builder.and(camp.environment.in(environments));
-//        }
-//        if (costs != null && !costs.isEmpty()) {
-//            builder.and(camp.cost.in(costs));
-//        }
-//
-//        return jpaQueryFactory
-//            .selectFrom(rank)
-//            .join(rank.camp, camp)
-//            .where(builder)
-//            .fetch();
-//    }
-//}
-//
+package com.sparta.studytrek.domain.rank.repository;
+
+import static com.sparta.studytrek.domain.rank.entity.QRank.rank;
+
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sparta.studytrek.domain.rank.entity.Rank;
+import java.util.List;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
+
+@RequiredArgsConstructor
+public class RankRepositoryCustomImpl implements RankRepositoryCustom {
+
+    private final JPAQueryFactory queryFactory;
+
+    @Override
+    public Page<Rank> findAllOrderByRankingAsc(Pageable pageable) {
+        List<Rank> ranks = queryFactory
+            .selectFrom(rank)
+            .orderBy(rank.ranking.asc())
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+        Long totalCount = queryFactory
+            .select(rank.count())
+            .from(rank)
+            .fetchOne();
+
+        return PageableExecutionUtils.getPage(ranks, pageable, () -> totalCount);
+    }
+
+    @Override
+    public Optional<Integer> findMaxRanking() {
+        Integer maxRanking = queryFactory
+            .select(rank.ranking.max())
+            .from(rank)
+            .fetchOne();
+        return Optional.ofNullable(maxRanking);
+    }
+}

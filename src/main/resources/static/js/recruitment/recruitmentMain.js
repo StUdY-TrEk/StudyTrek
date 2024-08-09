@@ -1,30 +1,12 @@
-// 현재 페이지 및 총 페이지 수
+const coursesPerPage = 9;  // 한 페이지당 코스 개수
 let currentPage = 1;
-const coursesPerPage = 9; // 페이지당 코스 수
 let totalCourses = 0;
 let totalPages = 0;
 const accessToken = localStorage.getItem('accessToken');
+const ITEMS_PER_PAGE = 9;
+let allResults = []; // 추가: 전체 결과를 저장할 변수
 
-// 페이지 렌더링 함수
-function renderPage() {
-    fetchCourses().then(courses => {
-        const container = document.getElementById('courses-container');
-        container.innerHTML = ''; // 기존 콘텐츠를 지웁니다
-
-        // 각 코스를 HTML로 생성하여 컨테이너에 추가합니다
-        courses.forEach(course => {
-            const courseElement = createCourseElement(course);
-            container.appendChild(courseElement);
-        });
-
-        // 페이지네이션 버튼 및 페이지 번호 업데이트
-        updatePaginationButtons();
-        renderPageNumbers();
-        addHeartButtonListeners(); // 좋아요 버튼 리스너 추가
-    });
-}
-
-// API 호출로 코스 데이터를 가져옵니다
+// API에서 코스 데이터를 가져오는 함수
 function fetchCourses() {
     return fetch(`/api/camps?page=${currentPage - 1}&size=${coursesPerPage}`)
     .then(response => response.json())
@@ -32,84 +14,92 @@ function fetchCourses() {
         if (data.statuscode === "200") {
             totalCourses = data.data.totalElements;
             totalPages = data.data.totalPages;
-            return data.data.content; // 코스 목록
+            allResults = data.data.content; // 전체 결과 저장
+            return allResults;
         } else {
-            console.error('Error:', data.msg);
+            console.error('에러:', data.msg);
             return [];
         }
     })
     .catch(error => {
-        console.error('API call error:', error);
+        console.error('API 호출 중 에러 발생:', error);
         return [];
     });
 }
 
-// 코스 엘리먼트를 생성합니다
-function createCourseElement(course) {
-    // 날짜와 시간 포맷팅
-    const formatDate = (dateStr) => dateStr ? new Date(dateStr).toLocaleDateString() : '정보 없음';
-
-    // 코스 요소를 생성
-    const div = document.createElement('div');
-    div.className = 'course';
-    div.dataset.id = course.id;
-
-    // imageUrl이 없을 경우 기본 이미지 사용
-    const imageUrl = course.imageUrl || 'https://example.com/default-image.jpg';
-
-    // 코스 정보 HTML 구성
-    div.innerHTML = `
-        <div class="course-image" style="background-image: url('${imageUrl}');"></div>
-        <div class="course-info">
-            <div class="course-header">
-                <h3>${course.title || '제목 없음'}</h3>
-                <div class="heart-container">
-                    <button class="heart-button" data-likes="${course.likes || 0}">
-                        <i class="far fa-heart"></i>
-                    </button>
-                    <div class="like-count">${course.likes || 0}</div>
-                </div>
-            </div>
-            <div class="course-categories">
-                <span class="category">${course.trek || '정보 없음'}</span>
-                <span class="category">${course.cost || '정보 없음'}</span>
-            </div>
-            <p class="course-institution">운영기관 : ${course.campName || '정보 없음'}</p>
-            <p>모집 기간 : ${formatDate(course.recruitStart)} ~ ${formatDate(course.recruitEnd)}</p>
-            <p>참여 기간 : ${formatDate(course.campStart)} ~ ${formatDate(course.campEnd)}</p>
-        </div>
-    `;
-
-    // 코스 요소 클릭 시 상세 페이지로 이동
-    div.addEventListener('click', () => goToCourseDetail(course.id));
-
-    return div;
+// 날짜를 "2024. 7. 31." 형식으로 변환하는 함수
+function formatDate(dateString) {
+    if (!dateString) return '정보 없음';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${year}. ${month}. ${day}.`;
 }
 
-// 페이지에서 코스 상세보기 함수 예시
+// 코스 카드 생성 함수
+function createCourseCard(course) {
+    const imageUrl = course.imageUrl || 'https://example.com/default-image.jpg';
+    return `
+        <div class="course" data-id="${course.id}" onclick="goToCourseDetail(${course.id})">
+            <div class="course-image" style="background-image: url('${imageUrl}');"></div>
+            <div class="course-info">
+                <div class="course-header">
+                    <h3>${course.title || '제목 없음'}</h3>
+                    <div class="heart-container">
+                        <button class="heart-button" data-likes="${course.likes || 0}">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <div class="like-count">${course.likes || 0}</div>
+                    </div>
+                </div>
+                <div class="course-categories">
+                    <span class="category">${course.trek || '정보 없음'}</span>
+                    <span class="category">${course.cost || '정보 없음'}</span>
+                </div>
+                <p class="course-institution">운영기관 : ${course.campName || '정보 없음'}</p>
+                <p>모집 기간 : ${formatDate(course.recruitStart)} ~ ${formatDate(course.recruitEnd)}</p>
+                <p>참여 기간 : ${formatDate(course.campStart)} ~ ${formatDate(course.campEnd)}</p>
+            </div>
+        </div>
+    `;
+}
+
+
 function goToCourseDetail(courseId) {
     const url = new URL(`/camp/${courseId}`, window.location.origin);
     window.location.href = url.href;
 }
 
+// 페이지 렌더링 함수
+function renderPage() {
+    fetchCourses().then(courses => {
+        const container = document.getElementById('courses-container');
+        container.innerHTML = '';
+        courses.forEach(course => {
+            container.innerHTML += createCourseCard(course);
+        });
+        updatePaginationButtons();
+        renderPageNumbers();
+        addHeartButtonListeners();
+    });
+}
+
+// 페이지 변경 함수
+function changePage(direction) {
+    currentPage += direction;
+    renderPage();
+}
 
 // 페이지네이션 버튼 업데이트 함수
 function updatePaginationButtons() {
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-
-    if (prevBtn) prevBtn.disabled = (currentPage === 1);
-    if (nextBtn) nextBtn.disabled = (currentPage === totalPages);
+    document.getElementById('prevBtn').disabled = (currentPage === 1);
+    document.getElementById('nextBtn').disabled = (currentPage === totalPages);
 }
 
 // 페이지 번호 렌더링 함수
 function renderPageNumbers() {
     const pageNumbersContainer = document.getElementById('pageNumbers');
-    if (!pageNumbersContainer) {
-        console.error('Page numbers container not found');
-        return;
-    }
-
     pageNumbersContainer.innerHTML = '';
 
     if (totalPages <= 1) {
@@ -168,7 +158,6 @@ function createPageButton(pageNumber) {
     return pageButton;
 }
 
-// 좋아요 버튼 클릭 시 이벤트 리스너 추가
 function addHeartButtonListeners() {
     document.querySelectorAll('.heart-button').forEach(button => {
         button.addEventListener('click', function(event) {
@@ -193,137 +182,156 @@ function addHeartButtonListeners() {
     });
 }
 
-
-function addReview() {
+function addCamp() {
     if (!accessToken) {
         alert('로그인이 필요합니다.');
         window.location.href = '/auth';
     } else {
-        const addUrl = document.querySelector('.write-review-button').getAttribute('camp-add');
+        const addUrl = document.querySelector('.start-review-btn').getAttribute('camp-add');
         window.location.href = addUrl;
     }
 }
 
-// 페이지 로드 시 코스 데이터를 가져와서 렌더링
-document.addEventListener('DOMContentLoaded', function() {
-    renderPage();
-
-    // 페이지 버튼이 존재하는 경우에만 이벤트 리스너 추가
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-
-    if (prevBtn) {
-        prevBtn.addEventListener('click', function() {
-            if (currentPage > 1) {
-                currentPage--;
-                renderPage();
-            }
-        });
-    } else {
-        console.error('prevBtn 버튼이 HTML에 존재하지 않습니다.');
-    }
-
-    if (nextBtn) {
-        nextBtn.addEventListener('click', function() {
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderPage();
-            }
-        });
-    } else {
-        console.error('nextBtn 버튼이 HTML에 존재하지 않습니다.');
-    }
-
-    // 기타 버튼 리스너 설정
-    const startReviewBtn = document.querySelector('.start-review-btn');
-    if (startReviewBtn) {
-        startReviewBtn.addEventListener('click', function() {
-            const addUrl = this.getAttribute('camp-add');
-            window.location.href = addUrl;
-        });
-    } else {
-        console.error('start-review-btn 버튼이 HTML에 존재하지 않습니다.');
-    }
-
-    const searchButton = document.getElementById('search-button');
-    if (searchButton) {
-        searchButton.addEventListener('click', function() {
-            const searchTerm = document.getElementById('search-input').value;
-            console.log(`Searching for: ${searchTerm}`);
-            alert('검색 기능이 실행되었습니다. 실제 구현 시 서버와 통신하여 결과를 표시합니다.');
-        });
-    } else {
-        console.error('search-button 버튼이 HTML에 존재하지 않습니다.');
-    }
-
-    const toggleFiltersButton = document.querySelector('.filter-button');
-    if (toggleFiltersButton) {
-        toggleFiltersButton.addEventListener('click', toggleFilters);
-    }
-
-    // 필터 버튼 클릭 시 필터 섹션을 토글
-    function toggleFilters() {
-        const filterSection = document.getElementById('filter-section');
-        const isVisible = filterSection.classList.contains('show');
-
-        // 필터 섹션을 토글
-        filterSection.classList.toggle('show');
-
-        // 모든 필터 카테고리 콘텐츠를 숨길 경우
-        if (!isVisible) {
-            document.querySelectorAll('.filter-category-content').forEach(content => {
-                content.style.display = 'none';
-            });
+// 초기 페이지 렌더링 및 이벤트 리스너 설정
+window.addEventListener('load', function() {
+    var allElements = document.getElementsByTagName('*');
+    Array.prototype.forEach.call(allElements, function(el) {
+        var includePath = el.dataset.includePath;
+        if (includePath) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    el.outerHTML = this.responseText;
+                }
+            };
+            xhttp.open('GET', includePath, true);
+            xhttp.send();
         }
-    }
-
-    document.querySelectorAll('.filter-category-header').forEach(header => {
-        header.addEventListener('click', function() {
-            toggleCategory(this);
-        });
     });
 
-    // 카테고리 헤더 클릭 시 해당 카테고리 콘텐츠의 표시 상태를 토글
-    function toggleCategory(headerElement) {
-        const content = headerElement.nextElementSibling;
-        const isVisible = content.style.display === 'block';
+    renderPage();  // 초기 페이지 렌더링
 
-        // 카테고리 콘텐츠의 표시 상태를 토글
-        content.style.display = isVisible ? 'none' : 'block';
+    // 이벤트 리스너 설정
+    document.getElementById('prevBtn').addEventListener('click', () => changePage(-1));
+    document.getElementById('nextBtn').addEventListener('click', () => changePage(1));
 
-        // 토글 아이콘을 업데이트
-        const toggleIcon = headerElement.querySelector('.toggle-icon');
-        if (toggleIcon) {
-            toggleIcon.textContent = isVisible ? '▼' : '▲';
-        }
+    const startReviewBtn = document.querySelector('.start-review-btn');
+    if (startReviewBtn) {
+        startReviewBtn.addEventListener('click', addCamp);
     }
 
-
-    const resetFiltersButton = document.querySelector('.reset-filters');
-    if (resetFiltersButton) {
-        resetFiltersButton.addEventListener('click', resetFilters);
-    } else {
-        console.error('reset-filters 버튼이 HTML에 존재하지 않습니다.');
-    }
-
-    function resetFilters() {
-        document.querySelectorAll('.filter-option.active').forEach(option => {
-            option.classList.remove('active');
+    // 정렬 버튼 이벤트 리스너
+    document.querySelectorAll('.sort-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const sortType = this.dataset.sort;
+            console.log(`정렬 타입: ${sortType}`);
+            // 여기에 정렬 로직 구현
         });
+    });
+});
+
+
+// 현재 페이지에 맞는 결과만 업데이트합니다.
+function updateResultsForCurrentPage() {
+    const resultsContainer = document.getElementById('resultsContainer');
+    resultsContainer.innerHTML = ''; // 기존 결과를 지웁니다.
+
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, allResults.length);
+
+    for (let i = startIndex; i < endIndex; i++) {
+        const course = allResults[i].recruitment;
+        course.id = allResults[i].id; // course 객체에 id 추가
+        course.likes = allResults[i].likes; // course 객체에 likes 추가
+
+        const courseCardHTML = createCourseCard(course);
+        const resultItem = document.createElement('div');
+        resultItem.classList.add('ranking-item');
+        resultItem.innerHTML = courseCardHTML;
+
+        resultsContainer.appendChild(resultItem);
     }
 
-    const applyFiltersButton = document.querySelector('.apply-filters');
-    if (applyFiltersButton) {
-        applyFiltersButton.addEventListener('click', applyFilters);
+    addHeartButtonListeners();
+    renderPageNumbers(); // 페이지네이션 업데이트
+}
+
+
+
+
+// 결과를 업데이트하여 화면에 표시합니다.
+function updateResults(responseData) {
+    const container = document.getElementById('courses-container');
+    container.innerHTML = '';
+
+    // API 응답에서 실제 데이터 추출
+    const data = responseData.data;
+
+    if (!Array.isArray(data)) {
+        console.warn('응답 데이터가 배열이 아닙니다:', data);
+        return;
+    }
+
+    if (data.length === 0) {
+        container.innerHTML = '<p>결과가 없습니다.</p>';
+        return;
+    }
+
+    data.forEach(courseData => {
+        // 데이터 구조 확인
+        console.log('courseData:', courseData);
+
+        // courseData가 올바른 형식을 가지고 있는지 확인
+        if (courseData) {
+            const course = {
+                id: courseData.id,
+                title: courseData.title,
+                imageUrl: courseData.imageUrl || 'https://example.com/default-image.jpg', // imageUrl이 없을 경우 기본 이미지
+                trek: courseData.trek,
+                cost: courseData.cost,
+                campName: courseData.campName,
+                recruitStart: courseData.recruitStart,
+                recruitEnd: courseData.recruitEnd,
+                campStart: courseData.campStart,
+                campEnd: courseData.campEnd,
+                likes: courseData.likes || 0
+            };
+
+            const courseCardHTML = createCourseCard(course);
+            container.innerHTML += courseCardHTML;
+        } else {
+            console.warn('유효하지 않은 courseData 객체:', courseData);
+        }
+    });
+
+    addHeartButtonListeners();
+    renderPageNumbers();
+}
+
+
+// DOMContentLoaded 이벤트가 발생하면 필터링된 결과를 업데이트합니다.
+document.addEventListener('DOMContentLoaded', () => {
+    const filteredResults = JSON.parse(localStorage.getItem('filteredResults'));
+
+    if (filteredResults) {
+        allResults = filteredResults; // 전체 결과 업데이트
+        //updateResultsForCurrentPage(); // 현재 페이지에 맞는 결과만 업데이트
+         updateResults(filteredResults); // 필터링된 결과를 화면에 업데이트합니다.
+        localStorage.removeItem('filteredResults'); // 필터링된 결과를 로컬 스토리지에서 제거합니다.
     } else {
-        console.error('apply-filters 버튼이 HTML에 존재하지 않습니다.');
-    }
-
-    function applyFilters() {
-        const activeFilters = document.querySelectorAll('.filter-option.active');
-        const filters = Array.from(activeFilters).map(filter => filter.textContent);
-        console.log('Applied filters:', filters);
-        alert('필터가 적용되었습니다. 실제 구현 시 서버와 통신하여 결과를 표시합니다.');
+        // renderPage(); // 필터링된 결과가 없을 경우 초기 페이지 렌더링
+        applyFilters(); // 필터링된 결과가 없을 경우 초기 필터 적용
     }
 });
 
+// 정렬 기능
+const rankingSortSelect = document.querySelector('.ranking-sort select');
+if (rankingSortSelect) {
+    rankingSortSelect.addEventListener('change', function () {
+        console.log('정렬 방식 변경:', this.value);
+        // applyFilters(); // 정렬 변경 시 필터를 재적용합니다.
+        updateResultsForCurrentPage(); // 정렬 변경 시 현재 페이지 결과 업데이트
+    });
+}
+
+document.addEventListener('DOMContentLoaded', addHeartButtonListeners);

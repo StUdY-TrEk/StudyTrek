@@ -58,7 +58,7 @@ public class Recruitment extends Timestamped {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;  // 유저 정보
-
+    
     public Recruitment(RecruitmentRequestDto requestDto, User user) {
         this.title = requestDto.getTitle();
         this.process = requestDto.getProcess();

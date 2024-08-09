@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<div th:fragment="recruitmentTopsearch" class="search-container">
+  <form class="search-form" onsubmit="performSearch(event)">
+    <div class="search-type">
+      <select class="search-rew" id="searchType">
+        <option value="all">전체</option>
+        <option value="web">웹</option>
+        <option value="image">이미지</option>
+        <option value="video">동영상</option>
+        <option value="news">뉴스</option>
+      </select>
+    </div>
+    <div class="search-input">
+      <input class="search-rew" type="text" id="searchQuery" placeholder="검색어를 입력하세요" required>
+    </div>
+    <div class="search-button">
+      <button class="main-search-btn" type="submit">검색</button>
+    </div>
+    <div class="filter-button">
+      <button class="main-filter-btn" type="button" onclick="toggleFilter()">필터</button>
+    </div>
+  </form>
+
+  <div id="selectedFilters" class="selected-filters"></div>
+
+  <div id="filterContainer" class="filter-container">
+    <div class="filter-section collapsed">
+      <h3 onclick="toggleSection(this)">트랙</h3>
+      <div class="filter-options">
+        <span class="filter-option" onclick="toggleFilter(this)">프론트엔드</span>
+        <span class="filter-option" onclick="toggleFilter(this)">백엔드</span>
+        <span class="filter-option" onclick="toggleFilter(this)">풀스택</span>
+        <span class="filter-option" onclick="toggleFilter(this)">Android</span>
+        <span class="filter-option" onclick="toggleFilter(this)">iOS</span>
+        <span class="filter-option" onclick="toggleFilter(this)">게임</span>
+        <span class="filter-option" onclick="toggleFilter(this)">AI</span>
+        <span class="filter-option" onclick="toggleFilter(this)">데이터</span>
+        <span class="filter-option" onclick="toggleFilter(this)">UI/UX</span>
+      </div>
+    </div>
+
+    <div class="filter-section collapsed">
+      <h3 onclick="toggleSection(this)">수업 환경</h3>
+      <div class="filter-options">
+        <span class="filter-option" onclick="toggleFilter(this)">온라인</span>
+        <span class="filter-option" onclick="toggleFilter(this)">오프라인</span>
+        <span class="filter-option" onclick="toggleFilter(this)">혼합</span>
+      </div>
+    </div>
+
+    <div class="filter-section collapsed">
+      <h3 onclick="toggleSection(this)">비용</h3>
+      <div class="filter-options">
+        <span class="filter-option" onclick="toggleFilter(this)">국비</span>
+        <span class="filter-option" onclick="toggleFilter(this)">사비</span>
+        <span class="filter-option" onclick="toggleFilter(this)">무료</span>
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button class="main-filter-reset" onclick="resetFilters()">초기화</button>
+      <button class="main-filter-apply" onclick="applyFilters()">필터 적용</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

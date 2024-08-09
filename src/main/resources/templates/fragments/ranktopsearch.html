@@ -7,21 +7,21 @@
 <body>
 <div th:fragment="ranktopsearch" class="search-container">
     <form class="search-form" onsubmit="performSearch(event)">
-        <div class="search-type">
-            <select class="search-rew" id="searchType">
-                <option value="all">전체</option>
-                <option value="web">웹</option>
-                <option value="image">이미지</option>
-                <option value="video">동영상</option>
-                <option value="news">뉴스</option>
-            </select>
-        </div>
-        <div class="search-input">
-            <input class="search-rew" type="text" id="searchQuery" placeholder="검색어를 입력하세요" required>
-        </div>
-        <div class="search-button">
-            <button class="main-search-btn" type="submit">검색</button>
-        </div>
+      <div class="search-type">
+        <select class="search-rew" id="searchType">
+          <option value="all">전체</option>
+          <option value="web">웹</option>
+          <option value="image">이미지</option>
+          <option value="video">동영상</option>
+          <option value="news">뉴스</option>
+        </select>
+      </div>
+      <div class="search-input">
+        <input class="search-rew" type="text" id="searchQuery" placeholder="검색어를 입력하세요" required>
+      </div>
+      <div class="search-button">
+        <button class="main-search-btn" type="submit">검색</button>
+      </div>
         <div class="filter-button">
             <button class="main-filter-btn" type="button" onclick="toggleFilter()">필터</button>
         </div>

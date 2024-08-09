@@ -76,3 +76,21 @@ Content-Type: application/json
 ### 참여기간 조회
 GET {{apiUrl}}/calendar/participate
 Content-Type: application/json
+
+### 트랙만 조회
+GET {{apiUrl}}/camps/filter?trek=프론트엔드
+
+### 트랙 여럿 조회
+GET {{apiUrl}}/camps/filter?trek=백엔드&trek=프론트엔드
+
+### 수업 환경만 조회
+GET {{apiUrl}}/camps/filter?place=오프라인
+
+### 비용만 조회
+GET {{apiUrl}}/camps/filter?cost=사비
+
+### 트랙과 수업 환경 포함 조회
+GET {{apiUrl}}/camps/filter?trek=백엔드&place=온라인
+
+###트랙과 수업환경 & 비용 포함 조회
+GET {{apiUrl}}/camps/filter?trek=백엔드&place=오프라인&cost=무료

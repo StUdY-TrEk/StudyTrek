@@ -5,11 +5,15 @@ body {
 }
 
 :root {
-    --sidebar-bg: #fff;
-    --body-bg: #f0f0f0;
-    --color: #000;
-    --hover-bg: #e0e0e0;
+    --bg: #fff;
+    --text: #382B22;
+    --light-pink: #f0faff;
+    --pink: #e9f9ff;
+    --dark-pink: #c4f5f9;
+    --pink-border: #afd9eb;
+    --pink-shadow: #e2f7ff;
 }
+
 
 body.dark {
     --sidebar-bg: #20212C;
@@ -19,46 +23,26 @@ body.dark {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1500px;
     margin: 0 auto;
     background-color: var(--body-bg);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    display: flex;
+    min-height: 100vh;
+    position: relative;
 }
 .review-section {
-    background-color: var(--body-bg);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    padding: 20px;
-    margin-bottom: 20px;
+    padding: 30px 0;
+    margin-top: 60px;
+    width: 1200px;
+    margin: 20px auto;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 70px;
+    flex-direction: column;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.review-section h2 {
-    margin: 0;
-    color: var(--color);
-}
-.review-section p {
-    color: var(--color);
-    margin: 0;
-}
-.start-review-btn {
-    background-color: #7FC8F8;
-    color: var(--color);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-    font-weight: bold;
-}
-.start-review-btn:hover {
-    background-color: #5AA9E6;
-}
+
+
 .search-bar {
     display: flex;
     align-items: center;
@@ -115,21 +99,7 @@ body.dark {
 .filter-button:hover {
     background-color: #FFE45E;
 }
-.filter-section {
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: var(--body-bg);
-    color: var(--color);
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-.filter-section.show {
-    display: flex;
-    color: var(--color);
-}
+
 .reset-filters {
     background-color: var(--sidebar-bg);
 }
@@ -183,21 +153,34 @@ body.dark {
 .filter-option.active {
     background-color: #FFE45E;
 }
-.filter-actions {
+
+.write-review-content {
+    width: 600px;
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
-    margin-top: 15px;
+    align-items: center;
 }
-.filter-actions button {
+
+.write-review-text {
+    text-align: left;
+}
+
+.content-wrapper {
+    display: flex;
     flex: 1;
-    margin: 0 5px;
+    transition: margin-left 0.3s ease;
+    justify-content: center;
 }
+
 .sort-buttons {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 20px;
     color: var(--color);
+    width: 1200px;
+    margin: auto;
 }
+
 .sort-button {
     background-color: var(--sidebar-bg);
     color: var(--color);
@@ -213,11 +196,14 @@ body.dark {
     background-color: #5AA9E6;
     color: var(--color);
 }
+
 .courses {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 30px;
 }
+
 .course {
     width: calc(33.33% - 20px);
     border: 1px solid #ddd;
@@ -358,4 +344,95 @@ body.dark {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.ranking-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.ranking-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+
+
+.start-review-btn {
+    background-color: #c2f4fd;
+    width: 170px;
+    height: 60px;
+    color: white;
+    border: none;
+    padding: 10px 10px;
+    font-size: 14px; /* 글자 크기를 15px에서 14px로 줄임 */
+    line-height: 1.2; /* 버튼 내부의 텍스트가 수직으로 가운데 정렬되도록 조정 */
+    text-align: center; /* 텍스트 가운데 정렬 */
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.start-review-btn:hover {
+    background-color: #7fecff;
+    color: rgb(104, 165, 255);
+}
+
+button.learn-more {
+    font-weight: 800;
+    color: var(--text);
+    text-transform: uppercase;
+    background: var(--light-pink);
+    border: 2px solid var(--pink-border);
+    border-radius: 0.75em;
+    transform-style: preserve-3d;
+    transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), background 150ms cubic-bezier(0, 0, 0.58, 1);
+}
+
+button.learn-more::before {
+    position: absolute;
+    content: '';
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--dark-pink);
+    border-radius: inherit;
+    box-shadow: 0 0 0 2px var(--pink-border), 0 0.625em 0 0 var(--pink-shadow);
+    transform: translate3d(0, 0.75em, -1em);
+    transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), box-shadow 150ms cubic-bezier(0, 0, 0.58, 1);
+}
+
+button.learn-more:hover {
+    background: var(--pink);
+    transform: translate(0, 0.25em);
+}
+
+button.learn-more:hover::before {
+    box-shadow: 0 0 0 2px var(--pink-border), 0 0.5em 0 0 var(--pink-shadow);
+    transform: translate3d(0, 0.5em, -1em);
+}
+
+button.learn-more:active {
+    background: var(--pink);
+    transform: translate(0em, 0.75em);
+}
+
+button.learn-more:active::before {
+    box-shadow: 0 0 0 2px var(--pink-border), 0 0 var(--pink-shadow);
+    transform: translate3d(0, 0, -1em);
+}
+
+
+.content {
+    width: 95%;
+    max-width: 1200px;
+    padding: 20px;
+    margin-top: 60px;
+    border-radius: 8px;
 }

@@ -60,6 +60,9 @@ public enum ResponseText {
     STUDY_GET_SUCCESS("스터디 단건 조회 성공"),
 
     // rank
+    RANK_CREATE_SUCCESS("순위 생성 성공"),
+    RANK_GET_LIST_SUCCESS("순위 목록 조회 성공"),
+
 
     // comment
     COMMENT_CREATE_SUCCESS("댓글 작성 성공"),

@@ -4,6 +4,12 @@ body {
     background-color: #f0f0f0;
 }
 
+.emoji {
+    font-size: 2rem; /* 이모지 크기 조정 */
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
 .container {
     max-width: 1500px;
     margin: 0 auto;
@@ -117,9 +123,19 @@ body {
 }
 
 .rating {
-    color: #ffc107;
-    font-size: 18px;
+    color: #FF6B35;
+    font-size: 20;
+    font-weight: bold;
     margin-bottom: 10px;
+}
+
+.camp-image {
+    width: 200px; /* 이미지 크기 조정 */
+    height: 50px;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 30px;
+    margin-top: 60px;
 }
 
 .review-preview {

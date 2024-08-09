@@ -1,165 +1,94 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOME</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" th:href="@{/css/recruitment/recruitmentMain.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- SweetAlert2 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5.0.0/dark.css">
-    <!-- SweetAlert2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script th:src="@{/js/scripts.js}" defer></script>
-    <script th:src="@{/js/recruitment/recruitmentMain.js}" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HOME</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" th:href="@{/css/recruitment/recruitmentMain.css}">
+  <link rel="stylesheet" th:href="@{/css/recruitmentTopsearch.css}">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- SweetAlert2 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5.0.0/dark.css">
+  <!-- SweetAlert2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script th:src="@{/js/scripts.js}" defer></script>
+  <script th:src="@{/js/recruitmentTopsearch.js}" defer></script>
+  <script th:src="@{/js/recruitment/recruitmentMain.js}" defer></script>
 </head>
 <body th:classappend="${isDarkMode} ? 'dark' : ''">
 <div th:replace="~{'fragments/topbar' :: topbar}"></div>
-<div class="main-container">
-    <div th:replace="~{'fragments/sidebar' :: sidebar(isSidebarOpen=${isSidebarOpen}, isDarkMode=${isDarkMode})}"></div>
+<div class="container">
+  <div
+      th:replace="~{'fragments/sidebar' :: sidebar(isSidebarOpen=${isSidebarOpen}, isDarkMode=${isDarkMode})}"></div>
+  <div class="content-wrapper">
     <div class="content">
-        <div class="container">
-            <div class="search-bar">
-                <div class="search-input-wrapper">
-                    <input type="text" placeholder="부트캠프 검색..." id="search-input">
-                    <button id="search-button" class="search-button">검색</button>
-                </div>
-                <button class="filter-button" onclick="toggleFilters()">필터</button>
+      <!-- 헤더 -->
+      <div th:replace="~{'fragments/recruitmentTopsearch' :: recruitmentTopsearch}"></div>
+
+      <!-- 모집글 작성 바로가기 배너 -->
+      <div class="review-section write-text">
+        <div class="content-wrapper">
+          <div class="write-review-content">
+            <div class="write-review-text write-text">
+              <h2>모집글 작성하러 가기</h2>
+              <p>Share your experience with others.</p>
             </div>
-            <div class="filter-section" id="filter-section">
-                <div class="filter-category">
-                    <div class="filter-category-header" onclick="toggleCategory(this)">
-                        <h4>수업 방식</h4>
-                        <span class="toggle-icon">▼</span>
-                    </div>
-                    <div class="filter-category-content">
-                        <span class="filter-option">온라인</span>
-                        <span class="filter-option">오프라인</span>
-                    </div>
-                </div>
-                <div class="filter-category">
-                    <div class="filter-category-header" onclick="toggleCategory(this)">
-                        <h4>재시 단계</h4>
-                        <span class="toggle-icon">▼</span>
-                    </div>
-                    <div class="filter-category-content">
-                        <span class="filter-option">서면</span>
-                        <span class="filter-option">대면</span>
-                        <span class="filter-option">전화</span>
-                        <span class="filter-option">인성 검사</span>
-                    </div>
-                </div>
-                <div class="filter-category">
-                    <div class="filter-category-header" onclick="toggleCategory(this)">
-                        <h4>종류</h4>
-                        <span class="toggle-icon">▼</span>
-                    </div>
-                    <div class="filter-category-content">
-                        <span class="filter-option">청년</span>
-                        <span class="filter-option">기계</span>
-                        <span class="filter-option">배달/배식</span>
-                        <span class="filter-option">전기</span>
-                        <span class="filter-option">도소매</span>
-                        <span class="filter-option">보건/의료</span>
-                        <span class="filter-option">창고</span>
-                    </div>
-                </div>
-                <div class="filter-actions">
-                    <button class="search-button reset-filters" onclick="resetFilters()">초기화</button>
-                    <button class="search-button apply-filters" onclick="applyFilters()">필터 적용</button>
-                </div>
-            </div>
-            <div class="review-section">
-                <div>
-                    <h2>모집글 작성하러 가기</h2>
-                    <p>Share your experience with others.</p>
-                </div>
-                <button class="start-review-btn" onclick="addReview()" th:camp-add="@{/camp/add}">START A POST</button>
-            </div>
-            <div class="sort-buttons">
-                <button class="sort-button" data-sort="views">조회순</button>
-                <button class="sort-button" data-sort="latest">최신순</button>
-                <button class="sort-button" data-sort="likes">좋아요순</button>
-                <button class="sort-button" data-sort="deadline">마감임박</button>
-            </div>
-            <div class="courses"id="courses-container">
-                <div class="course" data-id="1">
-                    <div class="course-image" style="background-image: url('https://example.com/coding1.jpg');"></div>
-                    <div class="course-info">
-                        <div class="course-header">
-                            <h3>코딩의 정석</h3>
-                            <div class="heart-container">
-                                <button class="heart-button" data-likes="150">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                                <div class="like-count">150</div>
-                            </div>
-                        </div>
-                        <div class="course-categories">
-                            <span class="category">온라인</span>
-                            <span class="category">국비</span>
-                            <span class="category">풀스택</span>
-                        </div>
-                        <p class="course-institution">운영기관: 코딩 아카데미</p>
-                        <p>모집 기간: 2024/07/26 ~ 2024/07/28</p>
-                        <p>참여 기간: 2024/08/26 ~ 2024/09/26</p>
-                    </div>
-                </div>
-                <div class="course" data-id="2">
-                    <div class="course-image" style="background-image: url('https://example.com/coding2.jpg');"></div>
-                    <div class="course-info">
-                        <div class="course-header">
-                            <h3>웹 개발 마스터</h3>
-                            <div class="heart-container">
-                                <button class="heart-button" data-likes="120">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                                <div class="like-count">120</div>
-                            </div>
-                        </div>
-                        <div class="course-categories">
-                            <span class="category">오프라인</span>
-                            <span class="category">프론트엔드</span>
-                        </div>
-                        <p class="course-institution">운영기관: 웹 마스터 스쿨</p>
-                        <p>모집 기간: 2024/08/01 ~ 2024/08/10</p>
-                        <p>참여 기간: 2024/09/01 ~ 2024/12/31</p>
-                    </div>
-                </div>
-                <div class="course" data-id="3">
-                    <div class="course-image" style="background-image: url('https://example.com/coding3.jpg');"></div>
-                    <div class="course-info">
-                        <div class="course-header">
-                            <h3>AI 개발자 과정</h3>
-                            <div class="heart-container">
-                                <button class="heart-button" data-likes="200">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                                <div class="like-count">200</div>
-                            </div>
-                        </div>
-                        <div class="course-categories">
-                            <span class="category">온라인</span>
-                            <span class="category">AI</span>
-                            <span class="category">머신러닝</span>
-                        </div>
-                        <p class="course-institution">운영기관: AI 연구소</p>
-                        <p>모집 기간: 2024/07/15 ~ 2024/07/30</p>
-                        <p>참여 기간: 2024/08/15 ~ 2025/02/15</p>
-                    </div>
-                </div>
-            </div>
-            <div class="pagination" id="pagination-container">
-                <button id="prevBtn" disabled>Previous</button>
-                <div id="pageNumbers" class="page-numbers-container"></div> <!-- 페이지 번호 컨테이너 추가 -->
-                <button id="nextBtn">Next</button>
-            </div>
+            <button class="start-review-btn learn-more" onclick="addReview()"
+                    th:camp-add="@{/camp/add}">
+              START A POST
+            </button>
+          </div>
         </div>
+      </div>
+
+<!--      &lt;!&ndash; 조회 정렬 &ndash;&gt;-->
+<!--      <div class="sort-buttons">-->
+<!--        <button class="sort-button" data-sort="views">조회순</button>-->
+<!--        <button class="sort-button" data-sort="latest">최신순</button>-->
+<!--        <button class="sort-button" data-sort="likes">좋아요순</button>-->
+<!--        <button class="sort-button" data-sort="deadline">마감임박</button>-->
+<!--      </div>-->
+
+      <!-- 모집 글 목록 -->
+      <div class="filter-section" id="resultsContainer">
+        <!-- 필터 섹션 내용 -->
+        <!-- ... (기존 필터 섹션 코드를 그대로 유지) ... -->
+      </div>
+
+        <div class="courses" id="courses-container">
+          <!-- Course cards will be dynamically added here -->
+          <!-- ... (기존 course 카드 내용을 그대로 유지) ... -->
+        </div>
+        <div class="pagination" id="pagination-container">
+          <button id="prevBtn" disabled>Previous</button>
+          <div id="pageNumbers" class="page-numbers-container"></div>
+          <button id="nextBtn">Next</button>
+        </div>
+      </div>
     </div>
 </div>
 <button class="open-sidebar-button hidden" th:onclick="|javascript:toggleSidebar()|">
-    <img th:src="@{/images/icon-show-sidebar.svg}" alt="사이드바 아이콘 보이기" />
+  <img th:src="@{/images/icon-show-sidebar.svg}" alt="사이드바 아이콘 보이기"/>
 </button>
 </body>
+<script>
+  window.addEventListener('load', function () {
+    var allElements = document.getElementsByTagName('*');
+    Array.prototype.forEach.call(allElements, function (el) {
+      var includePath = el.dataset.includePath;
+      if (includePath) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            el.outerHTML = this.responseText;
+          }
+        };
+        xhttp.open('GET', includePath, true);
+        xhttp.send();
+      }
+    });
+  });
+</script>
 </html>
