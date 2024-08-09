@@ -4,11 +4,11 @@ import lombok.Getter;
 
 @Getter
 public class ExceptionResponse {
-    private boolean success;
+    private int statusCode;
     private String message;
 
-    public ExceptionResponse(boolean success, String message) {
-        this.success = success;
+    public ExceptionResponse(int statusCode, String message) {
+        this.statusCode = statusCode;
         this.message = message;
     }
 }

@@ -1,5 +1,6 @@
 package com.sparta.studytrek.domain.admin.controller;
 
+import com.sparta.studytrek.aop.AdminRoleCheck;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -79,6 +80,7 @@ public class AdminController {
      * @return 회원탈퇴 성공 응답 데이터
      */
     @DeleteMapping("/users/{userId}")
+    @AdminRoleCheck
     public ResponseEntity<ApiResponse> adminDelete(@PathVariable Long userId)
     {
         adminService.adminDelete(userId);
@@ -96,6 +98,7 @@ public class AdminController {
      * @return 승인 성공 응답 데이터
      */
     @PostMapping("/profiles/{profileId}/approve")
+    @AdminRoleCheck
     public ResponseEntity<ApiResponse> approveProfile(@PathVariable Long profileId)
     {
         profileService.approveProfile(profileId);
@@ -113,6 +116,7 @@ public class AdminController {
      * @return 거절 성공 응답 데이터
      */
     @PostMapping("/profiles/{profileId}/reject")
+    @AdminRoleCheck
     public ResponseEntity<ApiResponse> rejectProfile(@PathVariable Long profileId)
     {
         profileService.rejectProfile(profileId);
@@ -129,6 +133,7 @@ public class AdminController {
      * @return 조회 성공 응답 데이터
      */
     @GetMapping("/profiles/role/{role}")
+    @AdminRoleCheck
     public ResponseEntity<ApiResponse> getAllProfiles(@PathVariable("role") UserRoleEnum role)
     {
         List<ProfileResponseDto> responseDtos = profileService.getProfilesByRole(role).getBody();
@@ -147,6 +152,7 @@ public class AdminController {
      * @return 조회 성공 응답 데이터
      */
     @GetMapping("/profiles/role/{role}/status/{status}")
+    @AdminRoleCheck
     public ResponseEntity<ApiResponse> getProfileByStatus(@PathVariable("role") UserRoleEnum role,
         @PathVariable("status") ProfileStatus status)
     {
@@ -167,6 +173,7 @@ public class AdminController {
      * @return 상세 조회 성공 응답 데이터
      */
     @GetMapping("/profiles/{profileId}")
+    @AdminRoleCheck
     public ResponseEntity<ApiResponse> getProfileById(@PathVariable Long profileId) {
         ProfileResponseDto profileResponseDto = profileService.getProfileById(profileId).getBody();
         ApiResponse response = ApiResponse.builder()
@@ -184,6 +191,7 @@ public class AdminController {
      * @return 부트캠프 등록 성공 데이터
      */
     @PostMapping("/camps")
+    @AdminRoleCheck
     public ResponseEntity<ApiResponse> createCamp(@RequestBody CampRequestDto campRequestDto)
     {
         CampResponseDto campResponseDto = campService.createCamp(campRequestDto);

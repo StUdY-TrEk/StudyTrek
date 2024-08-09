@@ -1,7 +1,6 @@
 package com.sparta.studytrek.common.exception;
 
 
-import com.sparta.studytrek.common.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -22,7 +21,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ExceptionResponse> handleCustomException(CustomException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-            .body(new ExceptionResponse(false, ex.getMessage()));
+            .body(new ExceptionResponse(ex.getErrorCode().getHttpStatus().value(), ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -30,6 +29,6 @@ public class GlobalExceptionHandler {
         FieldError fieldError = ex.getBindingResult().getFieldError();
         String errorMessage = fieldError != null ? fieldError.getDefaultMessage() : "Validation Error";
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-            .body(new ExceptionResponse(false, errorMessage));
+            .body(new ExceptionResponse(HttpStatus.FORBIDDEN.value(), errorMessage));
     }
 }

@@ -1,5 +1,6 @@
 package com.sparta.studytrek.domain.recruitment.controller;
 
+import com.sparta.studytrek.aop.RecruitmentRoleCheck;
 import com.sparta.studytrek.common.ApiResponse;
 import com.sparta.studytrek.common.ResponseText;
 import com.sparta.studytrek.domain.recruitment.dto.RecruitmentRequestDto;
@@ -36,6 +37,7 @@ public class RecruitmentController {
      * @return 모집글 작성 응답 데이터
      */
     @PostMapping
+    @RecruitmentRoleCheck
     public ResponseEntity<ApiResponse> createRecruitment(
         @RequestBody RecruitmentRequestDto requestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails)
@@ -59,6 +61,7 @@ public class RecruitmentController {
      * @return 모집글 수정 응답 데이터
      */
     @PutMapping("/{id}")
+    @RecruitmentRoleCheck
     public ResponseEntity<ApiResponse> updateRecruitment(@PathVariable Long id,
         @RequestBody RecruitmentRequestDto requestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails)
@@ -80,6 +83,7 @@ public class RecruitmentController {
      * @param userDetails 요청한 유저의 정보
      */
     @DeleteMapping("/{id}")
+    @RecruitmentRoleCheck
     public ResponseEntity<ApiResponse> deleteRecruitment(@PathVariable Long id,
         @AuthenticationPrincipal UserDetailsImpl userDetails)
     {

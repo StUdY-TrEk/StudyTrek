@@ -223,7 +223,7 @@ courseForm.addEventListener('submit', function(e) {
             } else {
                 Swal.fire({
                     title: '등록 실패',
-                    text: `오류 발생: ${data.msg}`,
+                    text: `오류 발생: ${data.message}`,
                     icon: 'error',
                     confirmButtonText: '확인'
                 });

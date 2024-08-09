@@ -1,5 +1,6 @@
 package com.sparta.studytrek.domain.study.controller;
 
+import com.sparta.studytrek.aop.StudyRoleCheck;
 import com.sparta.studytrek.common.ApiResponse;
 import com.sparta.studytrek.common.ResponseText;
 import com.sparta.studytrek.domain.study.dto.StudyRequestDto;
@@ -37,6 +38,7 @@ public class StudyController {
      * @return 스터디 모집글 작성 응답 데이터
      */
     @PostMapping
+    @StudyRoleCheck
     public ResponseEntity<ApiResponse<StudyResponseDto>> createStudy(
         @Valid @RequestBody StudyRequestDto request,
         @AuthenticationPrincipal UserDetailsImpl userDetails)
@@ -95,6 +97,7 @@ public class StudyController {
      * @return 수정된 스터디 모집글 응답 데이터
      */
     @PutMapping("/{studyId}")
+    @StudyRoleCheck
     public ResponseEntity<ApiResponse<StudyResponseDto>> updateStudy(@PathVariable Long studyId,
         @Valid @RequestBody StudyRequestDto request,
         @AuthenticationPrincipal UserDetailsImpl userDetails)
@@ -117,6 +120,7 @@ public class StudyController {
      * @return 삭제 결과 응답 데이터
      */
     @DeleteMapping("/{studyId}")
+    @StudyRoleCheck
     public ResponseEntity<ApiResponse<Void>> deleteStudy(@PathVariable Long studyId,
         @AuthenticationPrincipal UserDetailsImpl userDetails)
     {

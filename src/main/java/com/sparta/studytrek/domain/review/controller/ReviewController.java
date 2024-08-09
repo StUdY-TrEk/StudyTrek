@@ -1,5 +1,6 @@
 package com.sparta.studytrek.domain.review.controller;
 
+import com.sparta.studytrek.aop.ReviewRoleCheck;
 import com.sparta.studytrek.common.ApiResponse;
 import com.sparta.studytrek.common.ResponseText;
 import com.sparta.studytrek.domain.review.dto.ReviewRequestDto;
@@ -36,6 +37,7 @@ public class ReviewController {
      * @return 리뷰 작성 응답 데이터
      */
     @PostMapping
+    @ReviewRoleCheck
     public ResponseEntity<ApiResponse> createReview(@RequestBody ReviewRequestDto requestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails)
     {
@@ -58,6 +60,7 @@ public class ReviewController {
      * @return 리뷰 수정 응답 데이터
      */
     @PutMapping("/{id}")
+    @ReviewRoleCheck
     public ResponseEntity<ApiResponse> updateReview(@PathVariable Long id,
         @RequestBody ReviewRequestDto requestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails)
@@ -80,6 +83,7 @@ public class ReviewController {
      * @return 리뷰 삭제 응답 데이터
      */
     @DeleteMapping("/{id}")
+    @ReviewRoleCheck
     public ResponseEntity<ApiResponse> deleteReview(@PathVariable Long id,
         @AuthenticationPrincipal UserDetailsImpl userDetails)
     {

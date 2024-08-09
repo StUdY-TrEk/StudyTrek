@@ -28,9 +28,9 @@ POST {{apiUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "username": "boot12",
-  "password": "Password123!",
-  "role": "BOOTCAMP"
+  "username": "asdasd1",
+  "password": "Password1!",
+  "role": "USER"
 }
 
 > {%
